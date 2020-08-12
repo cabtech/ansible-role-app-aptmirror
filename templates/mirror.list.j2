@@ -1,0 +1,35 @@
+############# config ##################
+#
+set base_path    /var/apt-mirror
+#
+# set mirror_path  $base_path/mirror
+# set skel_path    $base_path/skel
+# set var_path     $base_path/var
+# set cleanscript $var_path/clean.sh
+# set defaultarch  <running host architecture>
+# set postmirror_script $var_path/postmirror.sh
+# set run_postmirror 0
+set nthreads     3
+set _tilde 0
+#
+############# end config ##############
+{% for codename in mirror_codenames %}
+{% for arch in mirror_archs %}
+
+deb-{{arch}} http://{{mirror_src}}/ubuntu {{codename}}           main restricted universe multiverse
+deb-{{arch}} http://{{mirror_src}}/ubuntu {{codename}}-security  main restricted universe multiverse
+deb-{{arch}} http://{{mirror_src}}/ubuntu {{codename}}-updates   main restricted universe multiverse
+#eb-{{arch}} http://{{mirror_src}}/ubuntu {{codename}}-proposed  main restricted universe multiverse
+deb-{{arch}} http://{{mirror_src}}/ubuntu {{codename}}-backports main restricted universe multiverse
+{% endfor %}
+
+deb-src http://{{mirror_src}}/ubuntu {{codename}}           main restricted universe multiverse
+deb-src http://{{mirror_src}}/ubuntu {{codename}}-security  main restricted universe multiverse
+deb-src http://{{mirror_src}}/ubuntu {{codename}}-updates   main restricted universe multiverse
+#eb-src http://{{mirror_src}}/ubuntu {{codename}}-proposed  main restricted universe multiverse
+deb-src http://{{mirror_src}}/ubuntu {{codename}}-backports main restricted universe multiverse
+{% endfor %}
+
+clean http://{{mirror_src}}/ubuntu
+
+# end

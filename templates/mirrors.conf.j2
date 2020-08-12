@@ -1,0 +1,9 @@
+server {
+ listen 80;
+ server_name myrror.internal.kingst.one; 
+ root {{mirror_base}}/mirror/archive.ubuntu.com;
+
+location / {
+ autoindex on;
+ }
+}

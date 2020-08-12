@@ -1,0 +1,17 @@
+<html>
+	<head>
+	</head>
+	<body>
+		<p>
+		<hr />
+		<p>
+		<h2>APT mirror of Ubuntu builds:</h2>
+		<ul>
+		{% for codename in mirror_codenames %}
+			<li>{{codename}}</li>
+		</ul>
+		{% endfor %}
+		</p>
+		<hr />
+	</body>
+<html>

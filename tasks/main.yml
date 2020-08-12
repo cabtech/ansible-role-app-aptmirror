@@ -1,0 +1,61 @@
+---
+- name: 'install packages'
+  apt:
+    name: ['apt-mirror', 'nginx']
+    state: present
+  become: true
+  tags:
+  - mirror
+  - mirror-pkg
+  - x-pkg
+
+- name: 'prepare mirror list'
+  template:
+    src: mirror.list.j2
+    dest: '/etc/apt/mirror.list'
+    mode: '0644'
+  become: true
+  tags:
+  - mirror
+
+- name: 'copy postmirror script over'
+  copy:
+    src: postmirror.sh
+    dest: '{{mirror_base}}/var/postmirror.sh'
+    mode: '0744'
+  become: true
+  tags:
+  - mirror
+
+- name: 'cron job for weekly clean up'
+  cron:
+    name: 'apt-mirror-clean-weekly'
+    state: present
+    disabled: false
+    user: root
+    minute: '05'
+    hour: '22'
+    job: /var/apt-mirror/var/clean.sh
+    weekday: '2'  # Tuesday
+  become: true
+  tags:
+  - mirror
+  - mirror-cron
+  - x-cron
+
+- name: 'schedule weekly updates by cron'
+  cron:
+    name: 'apt-mirror-weekly'
+    state: present
+    disabled: false
+    user: root
+    minute: '05'
+    hour: '02'
+    job: /usr/bin/apt-mirror
+    weekday: '3'  # Wednesday
+  become: true
+  tags:
+  - mirror
+  - mirror-cron
+  - x-cron
+...
