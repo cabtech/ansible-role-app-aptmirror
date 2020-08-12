@@ -1,4 +1,4 @@
 ---
 dependencies:
-- {role: ansible-role-app-nginx}
+- {src: 'git+https://github.com/cabtech/ansible-role-app-nginx.git', version: '1.1.0'}
 ...

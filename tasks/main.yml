@@ -1,13 +1,22 @@
 ---
 - name: 'install packages'
   apt:
-    name: ['apt-mirror', 'nginx']
+    name: '{{mirror_pkgs}}'
     state: present
   become: true
   tags:
-  - mirror
-  - mirror-pkg
-  - x-pkg
+  - ct-aptmirror
+  - ct-aptmirror-pkg
+
+- name: 'sort out directories'
+  file:
+    mode: '{{item.mode}}'
+    path: '{{item.path}}'
+    state: directory
+  loop: '{{mirror_dirs}}'
+  become: true
+  tags:
+  - ct-aptmirror
 
 - name: 'prepare mirror list'
   template:
@@ -16,7 +25,7 @@
     mode: '0644'
   become: true
   tags:
-  - mirror
+  - ct-aptmirror
 
 - name: 'copy postmirror script over'
   copy:
@@ -25,7 +34,7 @@
     mode: '0744'
   become: true
   tags:
-  - mirror
+  - ct-aptmirror
 
 - name: 'cron job for weekly clean up'
   cron:
@@ -35,13 +44,12 @@
     user: root
     minute: '05'
     hour: '22'
-    job: /var/apt-mirror/var/clean.sh
-    weekday: '2'  # Tuesday
+    job: '{{mirror_base}}/var/clean.sh'
+    weekday: '{{mirror_cron_day_clean}}'
   become: true
   tags:
-  - mirror
-  - mirror-cron
-  - x-cron
+  - ct-aptmirror
+  - ct-aptmirror-cron
 
 - name: 'schedule weekly updates by cron'
   cron:
@@ -52,10 +60,9 @@
     minute: '05'
     hour: '02'
     job: /usr/bin/apt-mirror
-    weekday: '3'  # Wednesday
+    weekday: '{{mirror_cron_day_refresh}}'
   become: true
   tags:
-  - mirror
-  - mirror-cron
-  - x-cron
+  - ct-aptmirror
+  - ct-aptmirror-cron
 ...
