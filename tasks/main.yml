@@ -1,6 +1,13 @@
 ---
 # --------------------------------
 
+- name: "Install dependencies"
+  ansible.builtin.apt:
+    name: "{{ mirror_dependencies }}"
+    state: present
+  become: true
+  tags: [ct-aptmirror]
+
 - name: "Install packages"
   ansible.builtin.apt:
     name: "{{ mirror_pkgs }}"
@@ -10,7 +17,9 @@
 
 - name: "Sort out directories"
   ansible.builtin.file:
+    group: "{{ item.group }}"
     mode: "{{ item.mode }}"
+    owner: "{{ item.owner }}"
     path: "{{ item.path }}"
     state: directory
   loop: "{{ mirror_dirs }}"

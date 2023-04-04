@@ -3,7 +3,8 @@
 
 mirror_archs: ["amd64", "i386"]
 mirror_base: /var/apt-mirror
-mirror_codenames: ["bionic"]
+mirror_codenames: ["jammy"]
+mirror_dependencies: ["cron"]
 mirror_cron_day_clean: "2"    # Tuesday
 mirror_cron_day_refresh: "3"  # Wednesday
 mirror_num_threads: 3
@@ -11,7 +12,8 @@ mirror_pkgs: ["apt-mirror"]
 mirror_src: "archive.ubuntu.com"
 
 mirror_dirs:
-- {path: "{{ mirror_base }}/var", mode: "0755"}
+- {group: root, mode: "0755", owner: root, path: "{{ mirror_base }}"}
+- {group: root, mode: "0755", owner: root, path: "{{ mirror_base }}/var"}
 
 # --------------------------------
 ...
