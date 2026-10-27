@@ -8,10 +8,6 @@ lint: .ylint .alint
 	uv run yamllint --config-file .config/yamllint .
 	@touch $@
 
-push: lint
-	@mkdir -p /mnt/hgfs/shared/ansible-role-app-aptmirror
-	rsync -a * /mnt/hgfs/shared/ansible-role-app-aptmirror
-
 clean:
 	@/bin/rm -f .alint .ylint
 
