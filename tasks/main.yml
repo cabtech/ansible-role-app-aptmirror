@@ -1,19 +1,36 @@
 ---
 # --------------------------------
 
+- name: "Include variables wrapper"
+  ansible.builtin.include_tasks:
+    file: variables.yml
+  tags: ["ct-aptmirror"]
+
+- name: "Disto/Family tasks (FF)"
+  ansible.builtin.include_tasks:
+    file: "{{ lookup('ansible.builtin.first_found', params) }}"
+  vars:
+    params:
+      files:
+      - "{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_major_version'].split('.')[0] }}.yml"
+      - "{{ ansible_facts['distribution'] }}.yml"
+      - "{{ ansible_facts['os_family'] }}.yml"
+      - "default.yml"
+  tags: ["ct-aptmirror"]
+
 - name: "Install dependencies"
   ansible.builtin.apt:
     name: "{{ mirror_dependencies }}"
     state: present
   become: true
-  tags: [ct-aptmirror]
+  tags: ["ct-aptmirror"]
 
 - name: "Install packages"
   ansible.builtin.apt:
     name: "{{ mirror_pkgs }}"
     state: present
   become: true
-  tags: [ct-aptmirror]
+  tags: ["ct-aptmirror"]
 
 - name: "Sort out directories"
   ansible.builtin.file:
@@ -24,7 +41,7 @@
     state: directory
   loop: "{{ mirror_dirs }}"
   become: true
-  tags: [ct-aptmirror]
+  tags: ["ct-aptmirror"]
 
 - name: "Prepare mirror list"
   ansible.builtin.template:
@@ -32,7 +49,7 @@
     dest: "/etc/apt/mirror.list"
     mode: "0644"
   become: true
-  tags: [ct-aptmirror]
+  tags: ["ct-aptmirror"]
 
 - name: "Copy postmirror script over"
   ansible.builtin.copy:
@@ -40,7 +57,7 @@
     dest: "{{ mirror_base }}/var/postmirror.sh"
     mode: "0744"
   become: true
-  tags: [ct-aptmirror]
+  tags: ["ct-aptmirror"]
 
 - name: "Cron job for weekly clean up"
   ansible.builtin.cron:
@@ -53,7 +70,7 @@
     job: "{{ mirror_base }}/var/clean.sh"
     weekday: "{{ mirror_cron_day_clean }}"
   become: true
-  tags: [ct-aptmirror]
+  tags: ["ct-aptmirror"]
 
 - name: "Schedule weekly updates by cron"
   ansible.builtin.cron:
@@ -66,7 +83,7 @@
     job: /usr/bin/apt-mirror
     weekday: "{{ mirror_cron_day_refresh }}"
   become: true
-  tags: [ct-aptmirror]
+  tags: ["ct-aptmirror"]
 
 # --------------------------------
 ...
